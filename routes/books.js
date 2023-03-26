@@ -134,5 +134,41 @@ router.post("/", (req,res) => {
             });
 });
 
+/**
+ * Route: /:id
+ * Method: PUT
+ * description: Updating an Existing Book by Their ID
+ * Access: Public
+ * Parameter:id
+ */
+router.put("/:id",(req,res) => {
+    const {id} = req.params;
+    const existingBook = books.find((each) => each.id === id);
+    if (!existingBook){
+        return res
+                .status(404)
+                .json({
+                    success: "false",
+                    message: "Book not Found"
+                });
+    }
+    const {data} = req.body;
+
+
+    const updatedBooks=books.map((each) => {
+        if (each.id===id){
+            return {...each,...data};
+        }
+        return each; //else statement
+    });
+
+    return res
+            .status(200)
+            .json({
+                success: "True",
+                message: "Books Updated",
+                data: updatedBooks
+            });
+});
 
 module.exports=router;

@@ -149,6 +149,74 @@ router.delete("/:id",(req,res) => {
     });
 });
 
+/**
+ * Route: /subscription/:id
+ * Method: GET
+ * description: Get user subscription details by id
+ * Access: Public
+ * Parameter: none
+ */
 
+router.get("/subscription/:id",(req,res) => {
+    const {id}=req.params;
+    const existingUser = users.find((each) => each.id === id);
+    if (!existingUser){
+        return res
+                .status(404)
+                .json({
+                    success: "false",
+                    messsage: "User ID not Found"
+                });
+    }
+
+    const dateInDays= (data= "") => {
+        let date;
+        if (data ===""){
+            date=new Date();
+        }else {
+            date = new Date(data);
+        }
+        const days= Math.floor(date/(1000*60*60*24));
+        return days;
+    };
+
+    const subscriptionType =(days) => {
+        if (existingUser.subscriptionType === "Basic"){
+            days=days + 90;
+        }else if (existingUser.subscriptionType === "Standard"){
+            days=days + 180;
+        }else if (existingUser.subscriptionType === "Premium"){
+            days=days + 365;
+        }
+        return days;
+    };
+
+    let returnDate= dateInDays(existingUser.returnDate);
+    let currentDate =dateInDays();
+    let subscriptionDate = dateInDays(existingUser.subscriptionDate);
+    let varDaysLeftForExpiration = subscriptionType(subscriptionDate);
+
+    const data={
+        ...existingUser,
+        isSubscriptionExpired: varDaysLeftForExpiration <= currentDate,
+        daysLeftForExpiration: 
+            varDaysLeftForExpiration <= currentDate
+            ? 0
+            :varDaysLeftForExpiration-currentDate,
+        fine:
+            returnDate < currentDate
+                ? subscriptionDate <= currentDate
+                    ?100 //if subscriptionexpired then 100/- charge
+                    :50
+                :0,
+    };
+    return res      
+            .status(200)
+            .json({
+                success: "true",
+                messsage: "Fetched the Data",
+                data: data
+            });
+});
 
 module.exports=router;
