@@ -119,7 +119,35 @@ router.put("/:id",(req,res)=>{
     });
 });
 
+/**
+ * Route: /users/:id
+ * Method: DELETE
+ * description: Deleting a User by ID
+ * Access: Public
+ * Parameter: id
+ */
+router.delete("/:id",(req,res) => {
+    const {id}= req.params;
+    const selectedUser = users.find((each) => each.id === id);
+    if (!selectedUser){
+           return res.status(404).json({
+            success:false,
+            messsage: "User Not Found"
+        }); 
+    }
 
+    const index =users.indexOf(selectedUser);
+    users.splice(index,1); 
+
+    const userName= selectedUser.name;
+    return res
+    .status(200)
+    .json({
+        success: "true",
+        messsage: `Deleted the User: ${userName}`,
+        data: users
+    });
+});
 
 
 

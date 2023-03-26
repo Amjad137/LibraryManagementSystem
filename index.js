@@ -2,6 +2,7 @@ const express = require("express");
 const {users} = require("./data/users.json");
 
 const userRouter = require("./routes/user.js");
+const bookRouter = require("./routes/books");
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,7 @@ app.get("/", (req,res) => {
 });
 
 app.use("/users", userRouter);
+app.use("/books",bookRouter);
 
 //to manage invalid routes (this should be kept on very low area)
 app.get("*", (req,res) => {
